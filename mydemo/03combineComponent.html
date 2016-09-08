@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title></title>
+<script src="./regular.js" type="text/javascript" charset="utf-8"></script>	
+<style type="text/css">
+.done {
+	text-decoration: line-through;	
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script type="text/javascript">
+var Note = Regular.extend({
+	name:'note',//注册组件，方便其他组件调用
+	template:'<input r-model={draft}><button on-click={this.post()}>post</button>',
+	post:function(){
+		/*r-model绑定的值都挂在this.data上*/
+		var data = this.data;
+		/*触发父组件的on-post*/
+		this.$emit('post',data.draft);
+		data.draft='';
+	}
+});
+
+var NoteList = Regular.extend({
+  template:
+    "<ul>{#list notes as nt}" +
+      "<li class={nt.done? 'done': ''} on-click={nt.done= !nt.done}>{nt.content}</li>" +
+    "{/list}</ul>"
+});
+Regular.component('list',NoteList);//另一种组件注册方式
+
+/*结合使用组件*/
+var NoteApp = Regular.extend({
+	/*$emit传入的第一个参数*/
+	template:
+    '<note on-post={notes.push({ content: $event} )}/>\
+    <list notes ={notes}></list>'
+});
+
+var noteapp = new NoteApp({
+	data:{notes:[]}
+});
+
+noteapp.$inject('#app');
+
+</script>
+</body>
+</html>

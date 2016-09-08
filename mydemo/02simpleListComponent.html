@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title></title>
+<script src="./regular.js" type="text/javascript" charset="utf-8"></script>	
+<style type="text/css">
+.done {
+	text-decoration: line-through;	
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script type="text/javascript">
+/*list的使用*/
+var NoteList = Regular.extend({
+  template:
+    "<ul>{#list notes as nt}" +
+      "<li class={nt.done? 'done': ''} on-click={nt.done= !nt.done}>{nt.content}</li>" +
+    "{/list}</ul>"
+});
+
+var list = new NoteList({
+  data: {
+    notes: [
+      {content: 'playgame'},
+      {content: 'homework'}
+    ]
+  }
+}).$inject("#app");	
+</script>
+</body>
+</html>

@@ -1,9 +1,21 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="UTF-8">
-		<title></title>
-	</head>
-	<body>
-	</body>
+<head>
+	<meta charset="UTF-8">
+	<title></title>
+<script src="./regular.js" type="text/javascript" charset="utf-8"></script>	
+</head>
+<body>
+<div id="app"></div>
+<script type="text/javascript">
+var Note = Regular.extend({
+  template:
+    "<input {#if !disabled} r-model='hello' {#else} disabled {/if} > {hello} \
+    <button on-click={disabled = !disabled}>{disabled? 'active': 'disable'} it</button>"
+});
+
+// 通过$inject将组件挂载到节点中
+var note = new Note().$inject("#app");	
+</script>
+</body>
 </html>
