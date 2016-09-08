@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title></title>
+<style type="text/css">
+.done {
+	text-decoration: line-through;	
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<!--模板可以定义于script标签中-->
+<script type="text/regular" id="hello">
+	{#if username}
+		Hello,{username} <a on-click={username = ''}>Logout</a>
+	{#else}
+		Sorry,Guest <a on-click={this.login()}>Login</a>
+	{/if}
+</script>
+<script src="./regular.js" type="text/javascript" charset="utf-8"></script>	
+<script type="text/javascript">
+	var HelloRegular = Regular.extend({
+		/*引用刚才创建的模板*/
+		template:'#hello',
+		login:function(){
+			var data = this.data;//获取数据
+			data.username = prompt('输入username:','');
+		}
+	});
+	
+	var component = new HelloRegular({
+		data:{username:'lf'}
+	});
+	/**
+	 * $inject的第二个参数默认为bottom
+	 * 还可以选择top，after，before
+	 * 分别对应firstChild,nextSibling,prevSibling
+	 */
+	component.$inject('#app');
+</script>
+</body>
+</html>
