@@ -3,9 +3,12 @@ var env = require('./env.js');
 var Lexer = require("./parser/Lexer.js");
 var Parser = require("./parser/Parser.js");
 var config = require("./config.js");
+/*各种基础方法*/
 var _ = require('./util');
+/*挂载一些方法到Regular对象上*/
 var extend = require('./helper/extend.js');
 var combine = {};
+/*如果是浏览器环境*/
 if(env.browser){
   var dom = require("./dom.js");
   var walkers = require('./walkers.js');
@@ -13,6 +16,7 @@ if(env.browser){
   var doc = dom.doc;
   combine = require('./helper/combine.js');
 }
+/*$on,$emit,$off等事件处理*/
 var events = require('./helper/event.js');
 var Watcher = require('./helper/watcher.js');
 var parse = require('./helper/parse.js');
@@ -27,7 +31,9 @@ var filter = require('./helper/filter.js');
 * @constructor
 * @param {Object} options specification of the component
 */
+/*1.引用Regular后，先定义该变量*/
 var Regular = function(definition, options){
+	/*记住运行状态*/
   var prevRunning = env.isRunning;
   env.isRunning = true;
   var node, template;
@@ -38,6 +44,7 @@ var Regular = function(definition, options){
 
   definition.data = definition.data || {};
   definition.computed = definition.computed || {};
+  /*将参数拷贝到definition*/
   if( this.data ) _.extend( definition.data, this.data );
   if( this.computed ) _.extend( definition.computed, this.computed );
 
@@ -127,17 +134,19 @@ var Regular = function(definition, options){
 }
 
 // check if regular devtools hook exists
+/*2.判断Regular开发工具是否存在，如果存在则挂在prototype中*/
 var devtools = window.__REGULAR_DEVTOOLS_GLOBAL_HOOK__;
 if (devtools) {
   Regular.prototype.devtools = devtools;
 }
-
+/*3.激活walkers*/
 walkers && (walkers.Regular = Regular);
 
 
 // description
 // -------------------------
 // 1. Regular and derived Class use same filter
+/*4.给Regular添加属性和方法*/
 _.extend(Regular, {
   // private data stuff
   _directives: { __regexp__:[] },
@@ -236,11 +245,14 @@ _.extend(Regular, {
   Parser: Parser,
   Lexer: Lexer,
   _addProtoInheritCache: function(name, transform){
+  	
     if( Array.isArray( name ) ){
+    	/*如果是数组则重复一个个执行*/
       return name.forEach(Regular._addProtoInheritCache);
     }
     var cacheKey = "_" + name + "s"
     Regular._protoInheritCache.push(name)
+    /*添加对应的cachekey*/
     Regular[cacheKey] = {};
     if(Regular[name]) return;
     Regular[name] = function(key, cfg){
@@ -271,12 +283,12 @@ _.extend(Regular, {
     return self;
   }
 
-});
-
+});       
+/*5.进入extend方法*/
 extend(Regular);
-
+/*7.将组件component加入_protoInheritCache: [ 'directive', 'use']中，并添加对应的cachekey*/
 Regular._addProtoInheritCache("component")
-
+/*8.将过滤器filter加入_protoInheritCache: [ 'directive', 'use']中，并添加对应的cachekey*/
 Regular._addProtoInheritCache("filter", function(cfg){
   return typeof cfg === "function"? {get: cfg}: cfg;
 })

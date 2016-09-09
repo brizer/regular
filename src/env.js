@@ -5,7 +5,7 @@ exports.svg = (function(){
   return typeof document !== "undefined" && document.implementation.hasFeature( "http://www.w3.org/TR/SVG11/feature#BasicStructure", "1.1" );
 })();
 
-
+/*判断是否是浏览器环境*/
 exports.browser = typeof document !== "undefined" && document.nodeType;
 // whether have component in initializing
 exports.exprCache = _.cache(1000);

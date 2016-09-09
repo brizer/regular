@@ -50,10 +50,11 @@ function process( what, o, supro ) {
 // if the property is ["events", "data", "computed"] , we should merge them
 var merged = ["data", "computed"], mlen = merged.length;
 module.exports = function extend(o){
+	/*o为Regular对象*/
   o = o || {};
   var supr = this, proto,
     supro = supr && supr.prototype || {};
-
+	/*6.将该作用域内方法挂载*/
   if(typeof o === 'function'){
     proto = o.prototype;
     o.implement = implement;

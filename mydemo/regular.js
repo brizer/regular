@@ -395,7 +395,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 
 	});
-
+	/*Regular.extend的入口*/
 	extend(Regular);
 
 	Regular._addProtoInheritCache("component")
@@ -3895,6 +3895,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	// if the property is ["events", "data", "computed"] , we should merge them
 	var merged = ["data", "computed"], mlen = merged.length;
 	module.exports = function extend(o){
+	/*Regular.extend的入口，将Regular对象传入*/
 	  o = o || {};
 	  var supr = this, proto,
 	    supro = supr && supr.prototype || {};

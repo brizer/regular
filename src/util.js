@@ -17,7 +17,7 @@ _.uid = (function(){
     return _uid++;
   }
 })();
-
+/*拷贝*/
 _.extend = function( o1, o2, override ){
   for(var i in o2) if (o2.hasOwnProperty(i)){
     if( o1[i] === undefined || override === true ){
