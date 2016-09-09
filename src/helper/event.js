@@ -82,6 +82,7 @@ _.extend(Event.prototype, API)
 
 Event.mixTo = function(obj){
   obj = typeof obj === "function" ? obj.prototype : obj;
+  /*将API继承给Regular对象*/
   _.extend(obj, API)
 }
 module.exports = Event;

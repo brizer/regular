@@ -18,6 +18,7 @@ if(env.browser){
 }
 /*$on,$emit,$off等事件处理*/
 var events = require('./helper/event.js');
+/*脏检测相关处理*/
 var Watcher = require('./helper/watcher.js');
 var parse = require('./helper/parse.js');
 var filter = require('./helper/filter.js');
@@ -293,8 +294,9 @@ Regular._addProtoInheritCache("filter", function(cfg){
   return typeof cfg === "function"? {get: cfg}: cfg;
 })
 
-
+/*9.为Regular添加事件处理*/
 events.mixTo(Regular);
+/*10.为Regular添加脏检测处理*/
 Watcher.mixTo(Regular);
 
 Regular.implement({
