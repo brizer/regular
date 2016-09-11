@@ -35,6 +35,7 @@ var filter = require('./helper/filter.js');
 * @param {Object} options specification of the component
 */
 /*1.引用Regular后，先定义该变量*/
+/*newC1.实例化一个组件时，data参数在definition中*/
 var Regular = function(definition, options){
 	/*记住运行状态*/
   var prevRunning = env.isRunning;
@@ -69,7 +70,7 @@ var Regular = function(definition, options){
   }
   this._children = [];
   this.$refs = {};
-
+	/*newC2.将模板加载*/
   template = this.template;
 
   // template is a string (len < 16). we will find it container first
@@ -79,6 +80,7 @@ var Regular = function(definition, options){
   // if template is a xml
   if(template && template.nodeType) template = template.innerHTML;
   if(typeof template === 'string') {
+  	/*newC3.将rgl模板解析为AST语法树*/
     template = new Parser(template).parse();
     if(usePrototyeString) {
     // avoid multiply compile
@@ -87,7 +89,7 @@ var Regular = function(definition, options){
       delete this.template;
     }
   }
-
+  /*newC4.处理计算属性*/		
   this.computed = handleComputed(this.computed);
   this.$root = this.$root || this;
   // if have events
@@ -97,6 +99,7 @@ var Regular = function(definition, options){
       this.$on(item.type, item.listener)
     }.bind(this))
   }
+  /*newC5.触发config方法*/
   this.$emit("$config");
   this.config && this.config(this.data);
   this.$emit("$afterConfig");
@@ -114,13 +117,15 @@ var Regular = function(definition, options){
   }
   // handle computed
   if(template){
+  	/*newC6.编译AST语法树*/
     this.group = this.$compile(template, {namespace: options.namespace});
     combine.node(this);
   }
 
-
+	/*newC7.触发第一次脏检测*/
   if(!this.$parent) this.$update();
   this.$ready = true;
+  /*newC8.触发init方法*/
   this.$emit("$init");
   if( this.init ) this.init(this.data);
   this.$emit("$afterInit");
@@ -130,7 +135,6 @@ var Regular = function(definition, options){
   env.isRunning = prevRunning;
 
   // children is not required;
-  
   if (this.devtools) {
     this.devtools.emit("init", this)
   }
