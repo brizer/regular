@@ -1,3 +1,6 @@
+/*基础内建指令*/
+
+
 // Regular
 var _ = require("../util.js");
 var dom = require("../dom.js");

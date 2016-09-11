@@ -1,3 +1,5 @@
+/*rgl模板语法解析器*/
+
 var _ = require("../util.js");
 
 var config = require("../config.js");

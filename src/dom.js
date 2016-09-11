@@ -66,7 +66,7 @@ dom.find = function(sl){
   if(sl.indexOf('#')!==-1) return document.getElementById( sl.slice(1) );
 }
 
-
+/*组件插入节点相关方法*/
 dom.inject = function(node, refer, position){
 
   position = position || 'bottom';

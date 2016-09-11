@@ -1,6 +1,7 @@
 
 var env = require('./env.js');
 var Lexer = require("./parser/Lexer.js");
+/*rgl模板语法解析器*/
 var Parser = require("./parser/Parser.js");
 var config = require("./config.js");
 /*各种基础方法*/
@@ -21,6 +22,7 @@ var events = require('./helper/event.js');
 /*脏检测相关处理*/
 var Watcher = require('./helper/watcher.js');
 var parse = require('./helper/parse.js');
+/*内建过滤器相关处理*/
 var filter = require('./helper/filter.js');
 
 
@@ -298,7 +300,7 @@ Regular._addProtoInheritCache("filter", function(cfg){
 events.mixTo(Regular);
 /*10.为Regular添加脏检测处理*/
 Watcher.mixTo(Regular);
-
+/*11.合并下列方法到Regular对象中*/
 Regular.implement({
   init: function(){},
   config: function(){},
@@ -583,7 +585,7 @@ Regular.prototype.inject = function(){
 
 
 // only one builtin filter
-
+/*12.激活内建过滤器*/
 Regular.filter(filter);
 
 module.exports = Regular;

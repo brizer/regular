@@ -49,6 +49,7 @@ function process( what, o, supro ) {
 
 // if the property is ["events", "data", "computed"] , we should merge them
 var merged = ["data", "computed"], mlen = merged.length;
+/*new1.o为组件的参数对象*/
 module.exports = function extend(o){
 	/*o为Regular对象*/
   o = o || {};
@@ -56,6 +57,7 @@ module.exports = function extend(o){
     supro = supr && supr.prototype || {};
 	/*6.将该作用域内方法挂载*/
   if(typeof o === 'function'){
+  	/*初次加载o为Regular构造函数，则进入此逻辑，实例化组件时o为参数对象则跳过该逻辑*/
     proto = o.prototype;
     o.implement = implement;
     o.extend = extend;
@@ -67,7 +69,7 @@ module.exports = function extend(o){
   }
 
   proto = _.createProto(fn, supro);
-
+	/*合并属性*/
   function implement(o){
     // we need merge the merged property
     var len = mlen;
@@ -90,6 +92,7 @@ module.exports = function extend(o){
   fn.implement(o)
   if(supr.__after__) supr.__after__.call(fn, supr, o);
   fn.extend = extend;
+  /*new2.将组件函数返回为实例*/
   return fn;
 }
 
