@@ -117,7 +117,7 @@ var Regular = function(definition, options){
   }
   // handle computed
   if(template){
-  	/*newC6.编译AST语法树*/
+  	/*newC6.编译AST语法树为LivingDOM*/
     this.group = this.$compile(template, {namespace: options.namespace});
     combine.node(this);
   }

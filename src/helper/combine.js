@@ -31,6 +31,7 @@ var combine = module.exports = {
     }
   },
   // @TODO remove _gragContainer
+  /*组件实例化后挂载dom节点上*/
   inject: function(node, pos ){
     var group = this;
     var fragment = combine.node(group.group || group);
