@@ -1,4 +1,8 @@
-/*rgl模板语法解析器*/
+/* rgl模板语法解析器，
+ * 将词法解析器Lexer解析出来是词快，
+ * 根据Regular模板语法，
+ * 转为具体的AST抽象语法树
+ **/
 
 var _ = require("../util.js");
 
@@ -18,7 +22,7 @@ function Parser(input, opts){
   opts = opts || {};
 
   this.input = input;
-  /*语法解析前先进入词法解析*/
+  /*par1.语法解析前先进入词法解析*/
   this.tokens = new Lexer(input, opts).lex();
   this.pos = 0;
   this.length = this.tokens.length;
@@ -30,10 +34,12 @@ var op = Parser.prototype;
 
 op.parse = function(){
   this.pos = 0;
+  /*par2.对词法数组进行分析*/
   var res= this.program();
   if(this.ll().type === 'TAG_CLOSE'){
     this.error("You may got a unclosed Tag")
   }
+  /*par5.将最终得到的AST语法树返回*/
   return res;
 }
 
@@ -65,7 +71,7 @@ op.error = function(msg, pos){
   msg =  "\n【 parse failed 】 " + msg +  ':\n\n' + _.trackErrorPos(this.input, typeof pos === 'number'? pos: this.ll().pos||0);
   throw new Error(msg);
 }
-
+/*根据位置判断下一步*/
 op.next = function(k){
   k = k || 1;
   this.pos += k;
@@ -94,7 +100,7 @@ op.eat = function(type, value){
 op.program = function(){
   var statements = [],  ll = this.ll();
   while(ll.type !== 'EOF' && ll.type !=='TAG_CLOSE'){
-
+	/*par3.对词法列表中的每个词法进行解析*/
     statements.push(this.statement());
     ll = this.ll();
   }
@@ -108,7 +114,9 @@ op.program = function(){
 //  | text
 op.statement = function(){
   var ll = this.ll();
+  /*par4.根据词法的type，进行不同的处理*/
   switch(ll.type){
+  	/*r-model disabled等*/
     case 'NAME':
     case 'TEXT':
       var text = ll.value;
@@ -117,10 +125,15 @@ op.statement = function(){
         text += ll.value;
       }
       return node.text(text);
+    /*input,button等标签类型，
+     * 内部child=this.program()递归执行解析
+     * */
     case 'TAG_OPEN':
       return this.xml();
+    /*if，else等模板语法*/
     case 'OPEN': 
       return this.directive();
+    /*表达式*/
     case 'EXPR_OPEN':
       return this.interplation();
     default:

@@ -8,7 +8,17 @@ var _ = require('./util');
 
 
 var walkers = module.exports = {};
-
+/*
+ * 首先遍历数组，提供额外的一个参数item_index，
+ * 这个参数是遍历该数组的游标值，
+ * 调用watch()模块直接监听该数组对象，
+ * 然后监听函数就是update()方法，
+ * 这个方法内部根据数组传入的值是一个常量还是变量，
+ * 会调用不同的subUpdate方法，这是一个性能优化点，
+ * 否则每次不管什么值都要重新编译一遍数组内部的所有值。
+ * 因为会手动执行第一次脏检查，故这个update会自动执行。
+ * 不需要提前执行它。
+ */
 walkers.list = function(ast, options){
 
   var Regular = walkers.Regular;  
@@ -331,7 +341,16 @@ var eventReg = /^on-(.+)$/
 /**
  * walkers element (contains component)
  */
+/**
+ * 在编译template节点的时候，
+ * 先判断节点的tag名称，
+ * 在Regular全局cache中查找是否存在该Regular组件，
+ * 如果不存在，就认为是普通Dom元素，
+ * 通过调用dom通用基础函数中create()方法创建对应的Dom元素。
+ * 如果存在则调用下面的walker.component()方法创建一个UI组件
+ */
 walkers.element = function(ast, options){
+	/*compile4.对单项AST进行处理*/
   var attrs = ast.attrs, self = this,
     Constructor = this.constructor,
     children = ast.children,
@@ -345,7 +364,7 @@ walkers.element = function(ast, options){
     _.log('r-content is deprecated, use {#inc this.$body} instead (`{#include}` as same)', 'warn');
     return this.$body && this.$body();
   } 
-
+	/*compile5.如果是组件，则进行组件流程*/
   if(Component || tag === 'r-component'){
     options.Component = Component;
     return walkers.component.call(this, ast, options)
@@ -357,7 +376,7 @@ walkers.element = function(ast, options){
   if( children && children.length ){
     group = this.$compile(children, {outer: options.outer,namespace: namespace, extra: extra });
   }
-
+	/*conpile6.根据AST内容创建dom元素*/
   element = dom.create(tag, namespace, attrs);
 
   if(group && !_.isVoidTag(tag)){
@@ -368,7 +387,7 @@ walkers.element = function(ast, options){
   _.fixTagAST(ast, Constructor)
 
   var destroies = walkAttributes.call(this, attrs, element, extra);
-
+	/*conpile7.返回单项AST的dom信息集*/
   return {
     type: "element",
     group: group,
@@ -399,7 +418,13 @@ walkers.element = function(ast, options){
     }
   }
 }
-
+/**
+ * 完成了组件内部集成模板，进行额外的编译，
+ * 并且保证了其编译上下文环境为当前组件，
+ * 这样让Regular组件的可扩展性更加强大，
+ * 并且让组件中间的模板，
+ * 在组件模板中可以通过this.$body获取。
+ */
 walkers.component = function(ast, options){
   var attrs = ast.attrs, 
     Component = options.Component,

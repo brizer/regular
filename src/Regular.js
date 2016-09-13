@@ -13,6 +13,7 @@ var combine = {};
 /*如果是浏览器环境*/
 if(env.browser){
   var dom = require("./dom.js");
+  /*将单个AST子项编译为LivingDOM*/
   var walkers = require('./walkers.js');
   var Group = require('./group.js');
   var doc = dom.doc;
@@ -341,6 +342,7 @@ Regular.implement({
    * @param  {[type]} record
    * @return {[type]}
    */
+  /*将AST抽象树编译成LivingDOM*/
   $compile: function(ast, options){
     options = options || {};
     if(typeof ast === 'string'){
@@ -353,6 +355,7 @@ Regular.implement({
     if(options.extra) this.__ext__ = options.extra;
 
     if(record) this._record();
+    /*compile1.进入编译器*/
     var group = this._walk(ast, options);
     if(record){
       records = this._release();
@@ -465,7 +468,9 @@ Regular.implement({
     // sync the component's state to called's state
     expr2.set(component, expr1.get(this));
   },
+  /*编译AST为LivingDOM*/
   _walk: function(ast, arg1){
+  	/*compile2.将AST数组层层递归到对象级别*/
     if( _.typeOf(ast) === 'array' ){
       var res = [];
 
@@ -475,7 +480,9 @@ Regular.implement({
 
       return new Group(res);
     }
+  	   
     if(typeof ast === 'string') return doc.createTextNode(ast)
+    /*compile3.进入walkers模块，对AST数组中的单个项进行编译*/ 
     return walkers[ast.type || "default"].call(this, ast, arg1);
   },
   _append: function(component){

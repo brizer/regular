@@ -1,3 +1,5 @@
+/*词法解析器Lexer，为语法解析器Parser做准备*/
+
 var _ = require("../util.js");
 var config = require("../config.js");
 

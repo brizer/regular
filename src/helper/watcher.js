@@ -98,11 +98,25 @@ var methods = {
    *                  Regular's parser extract the dependencies, in future maybe it will change to dirty-check combine with path-aware update;
    * @return {Void}   
    */
-
+  /**
+   * 运行此方法，进行watch对象的脏检查，
+   * 首先给当前的组件一个标记$phase,当正在进行脏检查，
+   * 就把这个字段标记为‘digest’，通过该参数可以避免多次同时进行脏检查。
+   * 然后递归调用真正的脏检查函数_digest()，这个函数返回脏状态，
+   * 如果此组件有children,递归调用子组件的_digest()函数，
+   * 当所有组合脏检查递归返回都是true的时候，
+   * 才认为本次脏检查进入稳定状态，已经完成，
+   * 然后出发$update事件，否则又会进入一次脏检查，
+   * 并且会计数，当超过20次脏检查还没让所有的watch进入稳定干净的状态，
+   * 说明监听变量存在循环依赖，宣告脏检查失败
+   * */
+	/*现阶段单纯的脏检测，后期可以加上set方式*/
   $digest: function(){
+  	/*digest3.进行脏检测,$phase为标识位，避免多次脏检测*/
     if(this.$phase === 'digest' || this._mute) return;
     this.$phase = 'digest';
     var dirty = false, n =0;
+    /*digest4.进行真正的脏检测*/
     while(dirty = this._digest()){
 
       if((++n) > 20){ // max loop
@@ -110,6 +124,7 @@ var methods = {
       }
     }
     if( n > 0 && this.$emit) {
+      /*digest10.完成脏检测，触发update事件*/
       this.$emit("$update");
       if (this.devtools) {
         this.devtools.emit("flush", this)
@@ -123,6 +138,7 @@ var methods = {
     var watchers = this._watchers;
     var dirty = false, children, watcher, watcherDirty;
     var len = watchers && watchers.length;
+    /*digest5.对watchers列表递归进行脏检测*/
     if(len){
       for(var i =0; i < len; i++ ){
         watcher = watchers[i];
@@ -130,6 +146,7 @@ var methods = {
           watchers.splice( i--, 1 );
           len--;
         }else{
+          /*digest6.对单个值进行检测*/  	
           watcherDirty = this._checkSingleWatch(watcher, i);
           if(watcherDirty) dirty = true;
         }
@@ -147,13 +164,14 @@ var methods = {
   },
   // check a single one watcher 
   _checkSingleWatch: function(watcher, i){
+    /*digest7.将值与记录的值进行对比，刷新*/  	
     var dirty = false;
     if(!watcher) return;
 
     var now, last, tlast, tnow,  eq, diff;
 
     if(!watcher.test){
-
+			/*digest8.通过get获取当前值，和last也就是上一次记录的值进行对比*/
       now = watcher.get(this);
       last = watcher.last;
       tlast = _.typeOf(last);
@@ -185,6 +203,7 @@ var methods = {
         watcher.fn.apply(this, result)
       }
     }
+    /*digest9.如果两个值不同，则进行赋值*/
     if(dirty && !watcher.test){
       if(tnow === 'object' && watcher.deep || tnow === 'array'){
         watcher.last = _.clone(now);
@@ -226,6 +245,7 @@ var methods = {
     if(detect && typeof expr === 'string') return expr;
     return this.$expression(expr).get(this);
   },
+  /*digest1.触发更新数据的操作*/
   $update: function(){
     var rootParent = this;
     do{
@@ -235,11 +255,11 @@ var methods = {
 
     var prephase =rootParent.$phase;
     rootParent.$phase = 'digest'
-
+		/*如果设置set方式*/
     this.$set.apply(this, arguments);
 
-    rootParent.$phase = prephase
-
+    rootParent.$phase = prephase;
+	  /*digest2.触发脏检测*/
     rootParent.$digest();
     return this;
   },
