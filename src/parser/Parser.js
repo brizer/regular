@@ -18,6 +18,7 @@ function Parser(input, opts){
   opts = opts || {};
 
   this.input = input;
+  /*语法解析前先进入词法解析*/
   this.tokens = new Lexer(input, opts).lex();
   this.pos = 0;
   this.length = this.tokens.length;

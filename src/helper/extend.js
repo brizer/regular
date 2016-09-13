@@ -63,13 +63,14 @@ module.exports = function extend(o){
     o.extend = extend;
     return o;
   } 
-  
+  /*新的一个子类*/
   function fn() {
     supr.apply(this, arguments);
   }
 
   proto = _.createProto(fn, supro);
-	/*合并属性*/
+	/*合并属性,将当前对象的原型中同
+	 *名属性或者方法名覆盖成传入的新属性*/
   function implement(o){
     // we need merge the merged property
     var len = mlen;
@@ -88,9 +89,11 @@ module.exports = function extend(o){
 
 
 
-  fn.implement = implement
+  fn.implement = implement;
+  //覆盖fn的原型，proto的原型supro不会覆盖
   fn.implement(o)
   if(supr.__after__) supr.__after__.call(fn, supr, o);
+  /*递归赋值，每个返回子类*/
   fn.extend = extend;
   /*new2.将组件函数返回为实例*/
   return fn;

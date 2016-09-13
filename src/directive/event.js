@@ -11,6 +11,7 @@ Regular._addProtoInheritCache("event");
 Regular.directive( /^on-\w+$/, function( elem, value, name , attrs) {
   if ( !name || !value ) return;
   var type = name.split("-")[1];
+  /*绑定事件处理函数*/
   return this._handleEvent( elem, type, value, attrs );
 });
 // TODO.
@@ -22,6 +23,7 @@ Regular.directive( /^(delegate|de)-\w+$/, function( elem, value, name ) {
   var _delegates = root._delegates || ( root._delegates = {} );
   if ( !name || !value ) return;
   var type = name.split("-")[1];
+  /*绑定事件处理函数*/
   var fire = _.handleEvent.call(this, value, type);
 
   function delegateEvent(ev){

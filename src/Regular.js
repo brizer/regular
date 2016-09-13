@@ -1,5 +1,6 @@
-
+/*环境相关配置*/
 var env = require('./env.js');
+/*词法分析器*/ 
 var Lexer = require("./parser/Lexer.js");
 /*rgl模板语法解析器*/
 var Parser = require("./parser/Parser.js");
@@ -69,6 +70,7 @@ var Regular = function(definition, options){
      this.$parent._append(this);
   }
   this._children = [];
+  /*该组件模板中通过ref标记的元素集合*/
   this.$refs = {};
 	/*newC2.将模板加载*/
   template = this.template;
@@ -99,7 +101,7 @@ var Regular = function(definition, options){
       this.$on(item.type, item.listener)
     }.bind(this))
   }
-  /*newC5.触发config方法*/
+  /*newC5.触发config方法,这是模板解析编译前处理data数据的唯一机会*/
   this.$emit("$config");
   this.config && this.config(this.data);
   this.$emit("$afterConfig");
@@ -117,7 +119,9 @@ var Regular = function(definition, options){
   }
   // handle computed
   if(template){
-  	/*newC6.编译AST语法树为LivingDOM*/
+  	/*newC6.编译AST语法树为LivingDOM,
+  	 * 调用walkers进行递归遍历ast
+  	 * 最后输出并保存这个组件的DOM*/
     this.group = this.$compile(template, {namespace: options.namespace});
     combine.node(this);
   }

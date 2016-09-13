@@ -1,3 +1,6 @@
+/*基本工具库函数集*/
+
+
 require('./helper/shim.js')();
 
 
@@ -11,13 +14,14 @@ var MAX_PRIORITY = 9999;
 
 
 _.noop = function(){};
+/*返回唯一标识，结合cache方法来取对象。脏检测中wathcer对象必备标识*/
 _.uid = (function(){
   var _uid=0;
   return function(){
     return _uid++;
   }
 })();
-/*拷贝*/
+/*浅拷贝*/
 _.extend = function( o1, o2, override ){
   for(var i in o2) if (o2.hasOwnProperty(i)){
     if( o1[i] === undefined || override === true ){
@@ -319,6 +323,7 @@ _.escape = (function(){
   }
 })();
 
+/*通过闭包的方式开辟一块缓存的内存空间，并返回一个对象，可以用来缓存编译DOM*/
 _.cache = function(max){
   max = max || 1000;
   var keys = [],
@@ -356,6 +361,7 @@ _.cache = function(max){
 
 // handle the same logic on component's `on-*` and element's `on-*`
 // return the fire object
+/*处理组件事件和DOM事件，将事件加入队列，如果fire则触发脏检测*/
 _.handleEvent = function(value, type ){
   var self = this, evaluate;
   if(value.type === 'expression'){ // if is expression, go evaluated way

@@ -23,6 +23,7 @@ function wrapHander(handler){
 }
 
 function Lexer(input, opts){
+	/*lex1.进入词法解析器，设置模板标准符号*/
   if(conflictTag[config.END]){
     this.markStart = conflictTag[config.END];
     this.markEnd = config.END;
@@ -30,6 +31,7 @@ function Lexer(input, opts){
 
   this.input = (input||"").trim();
   this.opts = opts || {};
+  /*lex2.根据模式选择解析标志*/
   this.map = this.opts.mode !== 2?  map1: map2;
   this.states = ["INIT"];
   if(opts && opts.expression){
@@ -59,14 +61,15 @@ lo.lex = function(str){
     }
     mlen = test[0].length;
     str = str.slice(mlen)
+    /*lex3.根据模板写法情况进行处理*/
     token = this._process.call(this, test, split, str)
     if(token) tokens.push(token)
     this.index += mlen;
     // if(state == 'TAG' || state == 'JST') str = this.skipspace(str);
   }
-
+	
   tokens.push({type: 'EOF'});
-
+	/*lex5.将解析完成的词法数组返回*/
   return tokens;
 }
 
@@ -77,7 +80,7 @@ lo.error = function(msg){
 lo._process = function(args, split,str){
   // console.log(args.join(","), this.state())
   var links = split.links, marched = false, token;
-
+	/*lex4.根据不同的词法init,tag,jst，选择不同的解析规则*/
   for(var len = links.length, i=0;i<len ;i++){
     var link = links[i],
       handler = link[2],
@@ -221,7 +224,7 @@ function setup(map){
   }
   return map;
 }
-
+/*根据3种不同的词法，进行不同的解析规则*/
 var rules = {
 
   // 1. INIT

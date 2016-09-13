@@ -8,5 +8,6 @@ exports.svg = (function(){
 /*判断是否是浏览器环境*/
 exports.browser = typeof document !== "undefined" && document.nodeType;
 // whether have component in initializing
+/*开启缓存对象，并指定最大数量*/
 exports.exprCache = _.cache(1000);
 exports.isRunning = false;
