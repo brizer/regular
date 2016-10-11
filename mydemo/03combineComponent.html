@@ -42,7 +42,9 @@ var NoteApp = Regular.extend({
 });
 
 var noteapp = new NoteApp({
-	data:{notes:[]}
+	data:{notes:[{
+		content:'firstOne'
+	}]}
 });
 
 noteapp.$inject('#app');

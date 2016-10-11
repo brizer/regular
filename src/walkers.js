@@ -321,7 +321,10 @@ walkers['if'] = function(ast, options){
   return group;
 }
 
-
+/*数据模板绑定的关键一步
+ *将传入的数据和对应的模板加入到watcher列表中
+ *并进行初次赋值替换数据模板
+ * */
 walkers.expression = function(ast, options){
   var node = document.createTextNode("");
   this.$watch(ast, function(newval){
@@ -365,6 +368,7 @@ walkers.element = function(ast, options){
     return this.$body && this.$body();
   } 
 	/*compile5.如果是组件，则进行组件流程*/
+	/*component3.如果编译时发现是组件，则进入组件的编译流程*/
   if(Component || tag === 'r-component'){
     options.Component = Component;
     return walkers.component.call(this, ast, options)
@@ -372,11 +376,11 @@ walkers.element = function(ast, options){
 
   if(tag === 'svg') namespace = "svg";
   // @Deprecated: may be removed in next version, use {#inc } instead
-  
+  /*如果有嵌套元素，则一层一层编译下去*/
   if( children && children.length ){
     group = this.$compile(children, {outer: options.outer,namespace: namespace, extra: extra });
   }
-	/*conpile6.根据AST内容创建dom元素*/
+	/*compile6.根据AST内容创建dom元素*/
   element = dom.create(tag, namespace, attrs);
 
   if(group && !_.isVoidTag(tag)){
@@ -387,7 +391,7 @@ walkers.element = function(ast, options){
   _.fixTagAST(ast, Constructor)
 
   var destroies = walkAttributes.call(this, attrs, element, extra);
-	/*conpile7.返回单项AST的dom信息集*/
+	/*compile7.返回单项AST的dom信息集*/
   return {
     type: "element",
     group: group,
@@ -426,6 +430,7 @@ walkers.element = function(ast, options){
  * 在组件模板中可以通过this.$body获取。
  */
 walkers.component = function(ast, options){
+  /*component4.进入组件编译流程*/
   var attrs = ast.attrs, 
     Component = options.Component,
     Constructor = this.constructor,
@@ -469,6 +474,7 @@ walkers.component = function(ast, options){
       if(typeof Component !== 'function') throw new Error("component " + componentName + " has not registed!");
     }
     // bind event proxy
+    /*component5.绑定组件事件*/
     var eventName;
     if(eventName = attr.event){
       events = events || {};
@@ -512,10 +518,10 @@ walkers.component = function(ast, options){
     extra: options.extra
   }
 
-
+  /*component6.实例化组件，组件的实例化流程*/
   var component = new Component(definition, options), reflink;
 
-
+  /*component7.处理ref节点逻辑*/
   if(ref && this.$refs){
     reflink = Component.directive('ref').link
     this.$on('$destroy', reflink.call(this, component, ref) )
@@ -570,7 +576,7 @@ function walkAttributes(attrs, element, extra){
 }
 
 walkers.attribute = function(ast ,options){
-
+  /*directive7.编译属性*/
   var attr = ast;
   var name = attr.name;
   var value = attr.value || "";
@@ -584,7 +590,7 @@ walkers.attribute = function(ast ,options){
   value = this._touchExpr(value);
 
   if(constant) value = value.get(this);
-
+  /*directive8.编译指令*/
   if(directive && directive.link){
     var extra = {
       attrs: options.attrs,

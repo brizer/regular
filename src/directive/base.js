@@ -13,6 +13,7 @@ var namespaces = consts.NAMESPACE;
 
 
 require("./event.js");
+/*表单元素的数据模板双向绑定*/
 require("./form.js");
 
 

@@ -1,3 +1,6 @@
+/*表单元素的双向绑定处理*/
+
+
 // Regular
 var _ = require("../util.js");
 var dom = require("../dom.js");
@@ -29,7 +32,7 @@ var modelHandlers = {
 // two-way binding with r-model
 // works on input, textarea, checkbox, radio, select
 
-
+/*r-model作为一种内置指令，来实现将数据模板添加到watcher列表的任务*/
 Regular.directive("r-model", {
   param: ['throttle', 'lazy'],
   link: function( elem, value, name, extra ){
@@ -80,6 +83,7 @@ function initSelect( elem, parsed, extra){
 }
 
 // input,textarea binding
+/*数据模板加入watcher列表*/
 function initText(elem, parsed, extra){
   var param = extra.param;
   var throttle, lazy = param.lazy
@@ -101,6 +105,7 @@ function initText(elem, parsed, extra){
   // @TODO to fixed event
   var handler = function (ev){
     var that = this;
+    /*触发脏检测*/
     if(ev.type==='cut' || ev.type==='paste'){
       _.nextTick(function(){
         var value = that.value
@@ -137,6 +142,7 @@ function initText(elem, parsed, extra){
   if(parsed.get(self) === undefined && elem.value){
      parsed.set(self, elem.value);
   }
+  /*当值改变时，触发处理函数handler*/
   return function (){
     if(lazy) return dom.off(elem, "change", handler);
     if( hasInput ){

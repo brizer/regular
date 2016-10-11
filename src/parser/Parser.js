@@ -116,7 +116,7 @@ op.statement = function(){
   var ll = this.ll();
   /*par4.根据词法的type，进行不同的处理*/
   switch(ll.type){
-  	/*r-model disabled等*/
+  	/*r-model disabled等指令*/
     case 'NAME':
     case 'TEXT':
       var text = ll.value;
@@ -125,12 +125,13 @@ op.statement = function(){
         text += ll.value;
       }
       return node.text(text);
-    /*input,button等标签类型，
+    /*input,button等标签元素类型，
      * 内部child=this.program()递归执行解析
      * */
+    /*directive3.解析每个标签时，对其中的指令进行解析*/
     case 'TAG_OPEN':
       return this.xml();
-    /*if，else等模板语法*/
+    /*if，else等模板语法和指令*/
     case 'OPEN': 
       return this.directive();
     /*表达式*/
@@ -146,6 +147,7 @@ op.statement = function(){
 op.xml = function(){
   var name, attrs, children, selfClosed;
   name = this.match('TAG_OPEN').value;
+  /*directive4.指令作为属性解析*/
   attrs = this.attrs();
   selfClosed = this.eat('/')
   this.match('>');
@@ -177,6 +179,7 @@ op.xentity = function(ll){
 
     }
     if( this.eat("=") ) value = this.attvalue(modifier);
+    /*directive6.给指令打上attr的词法返回，待编译*/
     return node.attribute( name, value, modifier );
   }else{
     if( name !== 'if') this.error("current version. ONLY RULE #if #else #elseif is valid in tag, the rule #" + name + ' is invalid');
@@ -196,6 +199,7 @@ op.attrs = function(isAttribute){
   }
 
   var attrs = [], ll;
+  /*directive5此处是指令解析关键入口*/
   while (ll = this.eat(eat)){
     attrs.push(this.xentity( ll ))
   }

@@ -170,6 +170,7 @@ _.extend(Regular, {
     this.__after__ = supr.__after__;
 
     // use name make the component global.
+    /*component1.如果组件有name，则注册到全局*/
     if(o.name) Regular.component(o.name, this);
     // this.prototype.template = dom.initTemplate(o)
     if(template = o.template){
@@ -199,6 +200,7 @@ _.extend(Regular, {
    * @method directive
    * @return {Object} Copy of ...
    */  
+  /*directive1.定义指令，内置指令都是通过该方法定义的*/
   directive: function(name, cfg){
 
     if(_.typeOf(name) === "object"){
@@ -208,7 +210,9 @@ _.extend(Regular, {
       return this;
     }
     var type = _.typeOf(name);
+    /*指令列表*/
     var directives = this._directives, directive;
+    /*当cfg为null时，取指令*/
     if(cfg == null){
       if( type === "string" && (directive = directives[name]) ) return directive;
       else{
@@ -220,7 +224,8 @@ _.extend(Regular, {
         }
       }
       return undefined;
-    }
+    };
+    /*directive2.link函数挂载*/
     if(typeof cfg === 'function') cfg = { link: cfg } 
     if(type === 'string') directives[name] = cfg;
     else if(type === 'regexp'){
@@ -268,6 +273,7 @@ _.extend(Regular, {
     Regular[cacheKey] = {};
     if(Regular[name]) return;
     Regular[name] = function(key, cfg){
+    	/*component2.注册组件,将组件name和对应的fn实例记入cache*/
       var cache = this[cacheKey];
 
       if(typeof key === "object"){
@@ -351,11 +357,14 @@ Regular.implement({
     var preExt = this.__ext__,
       record = options.record, 
       records;
-
+		/*如果存在此参数的compile，则为带有数据模板的编译
+		 * extra中为数据
+		 * */
     if(options.extra) this.__ext__ = options.extra;
 
     if(record) this._record();
     /*compile1.进入编译器*/
+    /*此处的options中，将数据等参数带入*/
     var group = this._walk(ast, options);
     if(record){
       records = this._release();
